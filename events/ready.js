@@ -3,7 +3,7 @@ const { startScheduler } = require('../scheduler/werbungScheduler');
 
 
 module.exports = {
-name: 'clientReady',
+name: 'ready',
 once: true,
 execute(client) {
 console.log(`✅ Bot online als ${client.user.tag}`);
