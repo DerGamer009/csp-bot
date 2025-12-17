@@ -2,22 +2,46 @@ require('dotenv').config();
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const { initDB } = require('./database/sqlite');
 
-
-const client = new Client({
-intents: [
-GatewayIntentBits.Guilds,
-GatewayIntentBits.GuildMessages,
-GatewayIntentBits.MessageContent,
-],
+process.on('unhandledRejection', (reason) => {
+  console.error('❌ Unhandled Promise Rejection:', reason);
 });
 
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught Exception:', err);
+});
 
-client.commands = new Collection();
-initDB();
+(async () => {
+  const token = process.env.TOKEN;
+  if (!token) {
+    console.error('❌ TOKEN fehlt in der .env (Discord Bot Token).');
+    process.exitCode = 1;
+    return;
+  }
 
-require('./handlers/commandHandler')(client);
-require('./handlers/eventHandler')(client);
-require('./handlers/deployHandler')(client);
+  const client = new Client({
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.MessageContent,
+    ],
+  });
 
 
-client.login(process.env.TOKEN);
+  client.commands = new Collection();
+  initDB();
+
+  require('./handlers/commandHandler')(client);
+  require('./handlers/eventHandler')(client);
+  // deploy ist optional (wenn CLIENT_ID/GUILD_ID fehlen, wird sauber übersprungen)
+  void require('./handlers/deployHandler')(client).catch((err) => {
+    console.error('❌ DeployHandler Fehler:', err);
+  });
+
+
+  try {
+    await client.login(token);
+  } catch (err) {
+    console.error('❌ Login fehlgeschlagen:', err);
+    process.exitCode = 1;
+  }
+})();
