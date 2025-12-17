@@ -1,0 +1,22 @@
+const { SlashCommandBuilder } = require('discord.js');
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('roll')
+    .setDescription('Würfelt eine Zahl')
+    .addIntegerOption((opt) =>
+      opt
+        .setName('seiten')
+        .setDescription('Wie viele Seiten? (2-1000)')
+        .setMinValue(2)
+        .setMaxValue(1000)
+        .setRequired(false)
+    ),
+
+  async execute(interaction) {
+    const sides = interaction.options.getInteger('seiten') ?? 6;
+    const value = Math.floor(Math.random() * sides) + 1;
+    await interaction.reply(`🎲 d${sides}: **${value}**`);
+  },
+};
+
