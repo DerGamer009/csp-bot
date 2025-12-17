@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js');
 const { initDB } = require('./database/sqlite');
 
 process.on('unhandledRejection', (reason) => {
@@ -21,9 +21,12 @@ process.on('uncaughtException', (err) => {
   const client = new Client({
     intents: [
       GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMembers,
       GatewayIntentBits.GuildMessages,
       GatewayIntentBits.MessageContent,
+      GatewayIntentBits.GuildModeration,
     ],
+    partials: [Partials.Message, Partials.Channel, Partials.GuildMember, Partials.User],
   });
 
 
