@@ -1,0 +1,13 @@
+const { SlashCommandBuilder } = require('discord.js');
+
+
+module.exports = {
+data: new SlashCommandBuilder()
+.setName('ping')
+.setDescription('Zeigt den Bot Ping an'),
+
+
+async execute(interaction) {
+await interaction.reply(`🏓 Pong! Latenz: ${interaction.client.ws.ping}ms`);
+},
+};
